@@ -30,5 +30,5 @@ COPY --chown=user . $HOME/app
 # Expose port (7860 is the default port for Hugging Face Spaces)
 EXPOSE 7860
 
-# Run the FastAPI server using Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run the FastAPI server using Uvicorn with dynamic port binding
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
