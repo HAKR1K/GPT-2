@@ -38,7 +38,7 @@ graph TD
     Head --> Logits["Vocabulary Logits (B, T, V)"]
 
     %% Detailed block subgraph
-    subgraph Single Transformer Block (Pre-LN Architecture)
+    subgraph Block ["Single Transformer Block (Pre-LN Architecture)"]
         BlockIn["Block Input"] --> LN1["Layer Norm (ln_1)"]
         LN1 --> MHA["Causal Multi-Head Attention"]
         MHA --> AddResidual1["Add Connection"]
