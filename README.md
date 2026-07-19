@@ -22,15 +22,37 @@ The network is composed of custom PyTorch layers written from scratch to ensure 
 
 ```mermaid
 graph TD
-    Input["Input Token IDs (B, T)"] --> TokenEmb["Token Embeddings (wte)"]
-    Input --> PosEmb["Learned Positional Embeddings (wpe)"]
-    TokenEmb --> Add["Element-wise Sum"]
-    PosEmb --> Add
+    %% Main Model Flow
+    Input["Input Token IDs (B, T)"] --> WTE["Token Embeddings (wte)"]
+    Input --> WPE["Learned Position Embeddings (wpe)"]
+    
+    WTE --> Add["Sum & Dropout"]
+    WPE --> Add
+    
     Add --> Block1["Transformer Block 1"]
-    Block1 --> BlockN["Transformer Block N (N=6)"]
-    BlockN --> LN["Final Layer Norm (ln_f)"]
-    LN --> LMHead["Linear Head (Weight-Tied to wte)"]
-    LMHead --> Logits["Vocabulary Logits (B, T, Vocab Size)"]
+    Block1 --> BlockDots["..."]
+    BlockDots --> Block6["Transformer Block 6"]
+    
+    Block6 --> LNF["Final Layer Norm (ln_f)"]
+    LNF --> Head["Linear LM Head (Weight-Tied)"]
+    Head --> Logits["Vocabulary Logits (B, T, V)"]
+
+    %% Detailed block subgraph
+    subgraph Single Transformer Block (Pre-LN Architecture)
+        BlockIn["Block Input"] --> LN1["Layer Norm (ln_1)"]
+        LN1 --> MHA["Causal Multi-Head Attention"]
+        MHA --> AddResidual1["Add Connection"]
+        BlockIn --> AddResidual1
+        
+        AddResidual1 --> LN2["Layer Norm (ln_2)"]
+        LN2 --> FC["Linear c_fc (4x Expansion)"]
+        FC --> Act["GELU Activation"]
+        Act --> Proj["Linear c_proj"]
+        Proj --> AddResidual2["Add Connection"]
+        AddResidual1 --> AddResidual2
+        
+        AddResidual2 --> BlockOut["Block Output"]
+    end
 ```
 
 ### 1. Embeddings ([embeddings.py](embeddings.py))
