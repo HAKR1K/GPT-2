@@ -40,11 +40,9 @@ def check_and_reassemble_checkpoint():
 
 check_and_reassemble_checkpoint()
 
-# Determine device
 device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
 print(f"Web server using device: {device}")
 
-# Global variables for model and tokenizer
 model = None
 tokenizer = SentencePieceTokenizer()
 model_config = None
@@ -52,13 +50,11 @@ model_config = None
 checkpoint_path = "checkpoints/checkpoint_best.pt"
 sp_model_path = "data/processed/sp.model"
 
-# Load tokenizer
 if os.path.exists(sp_model_path):
     tokenizer.load(sp_model_path)
 else:
     print(f"Warning: Tokenizer not found at {sp_model_path}")
 
-# Load model if checkpoint exists
 if os.path.exists(checkpoint_path):
     try:
         checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
@@ -152,7 +148,6 @@ def get_model_info():
 def generate(request: GenerateRequest):
     global model, tokenizer
     if model is None:
-        # Try reloading model in case it was trained after startup
         if os.path.exists(checkpoint_path):
             try:
                 checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
@@ -169,11 +164,9 @@ def generate(request: GenerateRequest):
             raise HTTPException(status_code=400, detail="Model is not trained yet. Run train.py first.")
 
     try:
-        # Encode prompt
         prompt_ids = tokenizer.encode(request.prompt)
         x = torch.tensor(prompt_ids, dtype=torch.long, device=device).unsqueeze(0)
 
-        # Autoregressive generation
         generated_ids = model.generate(
             idx=x,
             max_new_tokens=request.max_tokens,
@@ -183,21 +176,18 @@ def generate(request: GenerateRequest):
             top_p=request.top_p
         )
 
-        # Decode generated text
         output_text = tokenizer.decode(generated_ids[0].tolist())
         return {"prompt": request.prompt, "generated": output_text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
-# Serve the frontend
 @app.get("/")
 def get_index():
     with open("index.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content, status_code=200)
 
-# Serve style.css and app.js as static files if they are in the directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":

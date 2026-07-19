@@ -101,6 +101,13 @@ To interactively evaluate the checkpoints, an interactive web panel is provided.
 
 ## 🚀 Installation & Running
 
+### Prerequisites
+Before running the project, ensure you have the following installed on your system:
+* **Python 3.8 or higher** (Python 3.10+ is recommended).
+* **pip** (Python package installer).
+* **Git** (to clone and manage the repository).
+* *(Optional)* A GPU-accelerated environment (NVIDIA CUDA or Apple Silicon MPS) is recommended for faster model training, though CPU execution is fully supported for running the web playground and CLI inference.
+
 ### 1. Installation & Environment Setup
 
 1. **Clone the repository:**

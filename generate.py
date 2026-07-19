@@ -17,18 +17,15 @@ def main():
     parser.add_argument("--out_file", type=str, default="outputs/generated.txt", help="File path to save the generated output")
     args = parser.parse_args()
 
-    # Determine execution device
     device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # 1. Load tokenizer
     tokenizer = SentencePieceTokenizer()
     sp_model_file = f"{args.tokenizer_prefix}.model"
     if not os.path.exists(sp_model_file):
         raise FileNotFoundError(f"Tokenizer model not found at {sp_model_file}. Run train.py first to train it.")
     tokenizer.load(sp_model_file)
 
-    # Reassemble checkpoint if split files are found and the target file is missing
     if args.checkpoint == "checkpoints/checkpoint_best.pt" and not os.path.exists(args.checkpoint):
         part1 = "checkpoints/checkpoint_best.zip.aa"
         part2 = "checkpoints/checkpoint_best.zip.ab"
@@ -51,29 +48,24 @@ def main():
                 if os.path.exists(temp_zip):
                     os.remove(temp_zip)
 
-    # 2. Load model checkpoint
     if not os.path.exists(args.checkpoint):
         raise FileNotFoundError(f"Checkpoint not found at {args.checkpoint}. Please train the model first.")
     
     print(f"Loading model checkpoint from {args.checkpoint}...")
     checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=False)
     
-    # Initialize model using configuration stored in checkpoint
     model_config = checkpoint['config']
     model = MiniGPT(model_config)
     model.load_state_dict(checkpoint['model_state'])
     model.to(device)
     model.eval()
 
-    # 3. Generate text from prompt
     print(f"\nPrompt: {args.prompt}")
     print("Generating...")
     
-    # Encode prompt string to token IDs
     prompt_ids = tokenizer.encode(args.prompt)
-    x = torch.tensor(prompt_ids, dtype=torch.long, device=device).unsqueeze(0) # add batch dimension (1, seq_len)
+    x = torch.tensor(prompt_ids, dtype=torch.long, device=device).unsqueeze(0)
 
-    # Perform autoregressive generation
     generated_ids = model.generate(
         idx=x,
         max_new_tokens=args.max_tokens,
@@ -83,12 +75,10 @@ def main():
         top_p=args.top_p
     )
 
-    # Decode IDs to output string
     output_text = tokenizer.decode(generated_ids[0].tolist())
     print("\nGenerated Output:")
     print(output_text)
 
-    # 4. Save generated text to file
     os.makedirs(os.path.dirname(args.out_file), exist_ok=True)
     with open(args.out_file, "w", encoding="utf-8") as f:
         f.write(output_text)
