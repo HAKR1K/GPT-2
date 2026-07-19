@@ -4,6 +4,18 @@ This project is a complete, custom implementation of a decoder-only Transformer 
 
 ---
 
+## 🔗 Live Demo
+You can interact with the trained model directly in your browser:
+👉 **[Live GPT-2 Playground Interface](https://gpt-2-qeww.onrender.com)**
+
+> [!WARNING]
+> The live demo is hosted on the **Render Free Tier** (restricted to **0.1 CPU**). 
+> Because autoregressive text generation runs a forward pass of the model for *each* generated token, requesting a large sequence (e.g. 100+ tokens) may take over 100 seconds and trigger Render's gateway timeout.
+> 
+> **For testing the live link, please set the "Max Tokens" slider to 20–30 tokens.** To generate larger texts quickly, run the project locally on your machine using the steps below.
+
+---
+
 ## 📐 Architecture Design & Implementation
 
 The network is composed of custom PyTorch layers written from scratch to ensure architectural transparency and flexibility.
