@@ -133,11 +133,9 @@ Before running the project, ensure you have the following installed on your syst
    ```
 
 > [!NOTE]
-> Since the model checkpoint files (e.g., `checkpoint_best.pt`) are larger than 100MB, they are excluded from this Git repository by default (via `.gitignore`) to prevent file size errors on standard Git platforms like GitHub.
+> **Pre-Trained Model Included:** The pre-trained model checkpoint is already included in this repository. Because the model file is 133MB (which exceeds GitHub's 100MB limit), it is stored as two split parts (`checkpoint_best.zip.aa` and `checkpoint_best.zip.ab` inside the `checkpoints/` folder).
 > 
-> To run the text generator or the web playground, you can either:
-> 1. Run the training command `python train.py` to train the tokenizer and model from scratch (which will create the `checkpoints/` folder and model files locally).
-> 2. Manually place a pre-trained `checkpoint_best.pt` file inside a folder named `checkpoints/` in the root of this project.
+> When you run the web playground or CLI generator, the code will **automatically merge and extract these parts** back into the original `checkpoint_best.pt` file in the background. **No manual training or external downloads are required** to test the model.
 
 ---
 
