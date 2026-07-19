@@ -2,7 +2,7 @@ import os
 import torch
 from config import ModelConfig, TrainingConfig
 from tokenizer import SentencePieceTokenizer
-from model import MiniGPT
+from model import GPT2
 from trainer import Trainer
 from utils import seed_everything, print_model_summary, create_logger
 from train import download_data
@@ -57,7 +57,7 @@ def verify():
         
     # 5. Initialize model
     print("Initializing model...")
-    model = MiniGPT(model_config)
+    model = GPT2(model_config)
     
     logger = create_logger(train_config.log_dir)
     print_model_summary(model, logger)

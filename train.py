@@ -3,7 +3,7 @@ import urllib.request
 import torch
 from config import ModelConfig, TrainingConfig
 from tokenizer import SentencePieceTokenizer
-from model import MiniGPT
+from model import GPT2
 from trainer import Trainer
 from utils import seed_everything, print_model_summary, create_logger
 
@@ -60,7 +60,7 @@ def main():
 
     # 4. Initialize model
     logger.info("Initializing GPT-2 model...")
-    model = MiniGPT(model_config)
+    model = GPT2(model_config)
     print_model_summary(model, logger)
 
     # 5. Initialize trainer and start training

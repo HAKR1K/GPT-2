@@ -24,7 +24,7 @@ def print_model_summary(model: nn.Module, logger=None) -> None:
     total_params = count_parameters(model)
     summary_str = (
         f"\n========================================\n"
-        f"MiniGPT Model Summary\n"
+        f"GPT-2 Model Summary\n"
         f"========================================\n"
         f"Embedding Dimension: {model.config.embedding_dimension}\n"
         f"Number of Heads:     {model.config.number_of_heads}\n"
@@ -54,7 +54,7 @@ def load_checkpoint(path: str, device: str = 'cpu') -> dict:
 def create_logger(log_dir: str) -> logging.Logger:
     """Create a unified logger that prints to console and writes to a log file."""
     os.makedirs(log_dir, exist_ok=True)
-    logger = logging.getLogger("MiniGPT")
+    logger = logging.getLogger("GPT-2")
     logger.setLevel(logging.INFO)
     
     # Check to prevent adding duplicate handlers if method is called multiple times

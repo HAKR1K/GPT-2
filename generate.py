@@ -2,7 +2,7 @@ import os
 import argparse
 import torch
 from tokenizer import SentencePieceTokenizer
-from model import MiniGPT
+from model import GPT2
 
 def main():
     parser = argparse.ArgumentParser(description="Generate text using a trained GPT-2 model.")
@@ -55,7 +55,7 @@ def main():
     checkpoint = torch.load(args.checkpoint, map_location=device, weights_only=False)
     
     model_config = checkpoint['config']
-    model = MiniGPT(model_config)
+    model = GPT2(model_config)
     model.load_state_dict(checkpoint['model_state'])
     model.to(device)
     model.eval()

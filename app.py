@@ -9,7 +9,7 @@ from typing import Optional
 
 from config import ModelConfig, TrainingConfig
 from tokenizer import SentencePieceTokenizer
-from model import MiniGPT
+from model import GPT2
 from utils import count_parameters
 
 app = FastAPI(title="GPT-2 Playground")
@@ -59,7 +59,7 @@ if os.path.exists(checkpoint_path):
     try:
         checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
         model_config = checkpoint['config']
-        model = MiniGPT(model_config)
+        model = GPT2(model_config)
         model.load_state_dict(checkpoint['model_state'])
         model.to(device)
         model.eval()
@@ -116,7 +116,7 @@ def load_checkpoint_api(payload: dict):
     try:
         checkpoint = torch.load(path, map_location=device, weights_only=False)
         model_config = checkpoint['config']
-        model = MiniGPT(model_config)
+        model = GPT2(model_config)
         model.load_state_dict(checkpoint['model_state'])
         model.to(device)
         model.eval()
@@ -152,7 +152,7 @@ def generate(request: GenerateRequest):
             try:
                 checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
                 model_config = checkpoint['config']
-                model = MiniGPT(model_config)
+                model = GPT2(model_config)
                 model.load_state_dict(checkpoint['model_state'])
                 model.to(device)
                 model.eval()

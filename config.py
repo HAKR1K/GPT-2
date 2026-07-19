@@ -4,7 +4,7 @@ import torch
 
 @dataclass
 class ModelConfig:
-    """Configuration class for the MiniGPT model architecture.
+    """Configuration class for the GPT-2 model architecture.
     
     Attributes:
         vocab_size (int): Size of the vocabulary.

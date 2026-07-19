@@ -8,7 +8,7 @@ from config import TrainingConfig
 from dataset import GPTDataset, get_dataloader
 
 class Trainer:
-    """A clean and simple PyTorch trainer for the MiniGPT model."""
+    """A clean and simple PyTorch trainer for the GPT-2 model."""
     def __init__(self, model: nn.Module, config: TrainingConfig, train_data: torch.Tensor, val_data: torch.Tensor, logger=None):
         self.model = model
         self.config = config
