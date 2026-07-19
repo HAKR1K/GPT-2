@@ -22,37 +22,31 @@ The network is composed of custom PyTorch layers written from scratch to ensure 
 
 ```mermaid
 graph TD
-    %% Main Model Flow
-    Input["Input Token IDs (B, T)"] --> WTE["Token Embeddings (wte)"]
-    Input --> WPE["Learned Position Embeddings (wpe)"]
+    %% Input Layer
+    Inputs["Inputs"] --> InputEmb["Input Embedding"]
+    PosEnc(("Positional Encoding")) --> AddEmbed["⊕"]
+    InputEmb --> AddEmbed
     
-    WTE --> Add["Sum & Dropout"]
-    WPE --> Add
-    
-    Add --> Block1["Transformer Block 1"]
-    Block1 --> BlockDots["..."]
-    BlockDots --> Block6["Transformer Block 6"]
-    
-    Block6 --> LNF["Final Layer Norm (ln_f)"]
-    LNF --> Head["Linear LM Head (Weight-Tied)"]
-    Head --> Logits["Vocabulary Logits (B, T, V)"]
+    AddEmbed --> BlockInput["Block Input"]
 
-    %% Detailed block subgraph
-    subgraph Block ["Single Transformer Block (Pre-LN Architecture)"]
-        BlockIn["Block Input"] --> LN1["Layer Norm (ln_1)"]
-        LN1 --> MHA["Causal Multi-Head Attention"]
-        MHA --> AddResidual1["Add Connection"]
-        BlockIn --> AddResidual1
+    %% Transformer Block Subgraph (Decoder-Only Pre-LN)
+    subgraph Block ["Transformer Block (6x)"]
+        BlockInput --> LN1["Layer Norm"]
+        LN1 --> MHA["Masked Multi-Head Attention"]
+        MHA --> Add1["⊕ (Add & Norm)"]
+        BlockInput --> Add1
         
-        AddResidual1 --> LN2["Layer Norm (ln_2)"]
-        LN2 --> FC["Linear c_fc (4x Expansion)"]
-        FC --> Act["GELU Activation"]
-        Act --> Proj["Linear c_proj"]
-        Proj --> AddResidual2["Add Connection"]
-        AddResidual1 --> AddResidual2
-        
-        AddResidual2 --> BlockOut["Block Output"]
+        Add1 --> LN2["Layer Norm"]
+        LN2 --> FF["Feed Forward"]
+        FF --> Add2["⊕ (Add & Norm)"]
+        Add1 --> Add2
     end
+    
+    %% Output Layer
+    Add2 --> FinalLN["Final Norm"]
+    FinalLN --> Linear["Linear"]
+    Linear --> Softmax["Softmax"]
+    Softmax --> Outputs["Output Probabilities"]
 ```
 
 ### 1. Embeddings ([embeddings.py](embeddings.py))
